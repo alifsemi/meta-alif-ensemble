@@ -1,0 +1,42 @@
+This README file contains information on the contents of the meta-alif-ensemble layer.
+
+Please see the corresponding sections below for details.
+
+Dependencies
+============
+
+  URI: git://github.com/openembedded/openembedded-core.git
+  layers: meta
+  branch: zeus
+  revision: HEAD
+
+  URI: https://github.com/alifsemi/meta-alif
+  layers: meta-alif
+  branch: devkit-ex-b0
+  revision: HEAD
+
+
+Patches
+=======
+
+Please submit any patches against the meta-alif-ensemble layer to
+the following maintainers
+
+Maintainers:
+           Hemanth Kumar <hemanth@alifsemi.com>
+           Jagadeesh Krishnanjanappa <jagadeesh@alifsemi.com>
+
+Table of Contents
+=================
+
+  I. Adding the meta-alif-ensemble layer to your build
+ II. Misc
+
+
+I. Adding the meta-alif-ensemble layer to your build
+=================================================
+
+Run 'bitbake-layers add-layer meta-alif-ensemble'
+
+II. Misc
+========
