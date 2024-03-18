@@ -321,14 +321,6 @@ CONF_VERSION = "1"
 #
 
 #
-# SMP - Config option to build Linux kernel with SMP support
-# Supported values are,
-#  "0" - builds Linux kernel without SMP support.
-#  "1" - builds Linux kernel with SMP support.
-# Default value: "0"
-#SMP = "0"
-#
-#
 # HYPRAM_AS_LOWMEM - Config option to use HyperRAM (OSPI0) as low memory.
 # Supported values are,
 #  "1" - uses HyperRAM as low memory by the Linux Kernel.

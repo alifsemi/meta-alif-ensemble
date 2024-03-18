@@ -5,7 +5,7 @@ LICENSE = "BSD-3-Clause & Alif"
 LIC_FILES_CHKSUM = "file://license.rst;md5=c709b197e22b81ede21109dbffd5f363"
 DEPENDS += " dtc-native coreutils-native"
 DEPENDS += " ${TF-A_DEPENDS} "
-PR = "r28"
+PR = "r29"
 
 SRC_URI = "${TFA_TREE};branch=${TFA_BRANCH}"
 SRCREV = "${AUTOREV}"
