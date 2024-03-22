@@ -277,15 +277,15 @@ CONF_VERSION = "1"
 
 # HYPRAM_EN - Enables OSPI0 NOR flash (0xA0000000) as a HyperRAM.
 # Supported values are,
-#  "0" - enable OSPI0 as a HyperRAM.
-#  "1" - disable OSPI0 as a HyperRAM.
+#  "1" - enable OSPI0 as a HyperRAM.
+#  "0" - disable OSPI0 as a HyperRAM.
 # Default value: "1"
 #HYPRAM_EN = "1"
 
 # FLASH_EN - Enables OSPI1 NOR flash (0xC0000000) in XiP mode.
 # Supported values are,
-#  "0" - enable OSPI1 in XiP mode.
-#  "1" - disable OSPI1 in XiP mode.
+#  "1" - enable OSPI1 in XiP mode.
+#  "0" - disable OSPI1 in XiP mode.
 # Default value: "0"
 #FLASH_EN = "0"
 
