@@ -290,6 +290,24 @@ CONF_VERSION = "1"
 #FLASH_EN = "0"
 
 #
+# AES_EN - Enables code in the arm-tf to decrypt the AES encrypted
+# images stored in the OSPI1 NOR flash memory (0xC0000000).
+# Supported values are,
+# "1" - Decrypt AES encrypted XiP images in the OSPI1 NOR.
+# "0" - Execute XiP images in the OSPI1 NOR as is.
+# Default value: "0"
+#
+
+#
+# AES_ENC_KEY - The 16bytes AES key used to decrypt the AES encrypted
+# images stored in the OSPI1 NOR flash memory (0xC0000000). The 16bytes
+# AES key used for decryption should be the same used for encrypting images.
+# Supported values are,
+# Any 16bytes string. For example: "0123456789ABCDEF"
+# NULL string (""), if AES_EN is set to "0"
+#
+
+#
 # Extra distro features configuration defaults
 #
 # The DISTRO_FEATURES variable allows addition of software support in the
