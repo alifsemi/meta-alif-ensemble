@@ -343,6 +343,6 @@ CONF_VERSION = "1"
 # Supported values are,
 #  "1" - uses HyperRAM as low memory by the Linux Kernel.
 #  "0" - uses SRAM0 and SRAM1 as low memory by the Linux Kernel.
-# Default value: "1"
-#HYPRAM_AS_LOWMEM = "1"
+# Default value: "0"
+#HYPRAM_AS_LOWMEM = "0"
 #
