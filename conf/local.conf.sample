@@ -259,8 +259,8 @@ CONF_VERSION = "1"
 
 # KERNEL_MTD_START_ADDR - A hex address indicating the MTD partition
 # start address where the rootfs in cramfs-xip format is stored.
-# Default value: "0x80300000"
-#KERNEL_MTD_START_ADDR = "0x80300000"
+# Default value: "0x80380000"
+#KERNEL_MTD_START_ADDR = "0x80380000"
 
 # KERNEL_MTD_LEN - A hex value indicating the size (in bytes) of
 # MTD partition starting from the address denoted by
@@ -345,4 +345,25 @@ CONF_VERSION = "1"
 #  "0" - uses SRAM0 and SRAM1 as low memory by the Linux Kernel.
 # Default value: "0"
 #HYPRAM_AS_LOWMEM = "0"
+#
+
+#
+# OSPI_BOOT - Config option which sets parameters to boot xipImage and
+# cramfs-xip from OSPI1 NOR flash.
+# Supported values are,
+#  "1" - uses OSPI1 NOR flash to boot xipImage and cramfs-xip.
+#  "0" - uses MRAM flash to boot xipImage and cramfs-xip.
+# Default value: "0"
+#OSPI_BOOT = "0"
+#
+
+#
+# OSPI_BOOT_ENC - Config option which sets parameters to boot 16-bytes
+# AES ecncrypted xipImage and cramfs-xip from OSPI1 NOR flash.
+# Supported values are,
+#  "1" - uses OSPI1 NOR flash to boot 16-bytes AES ecncrypted xipImage
+#  and cramfs-xip.
+#  "0" - uses MRAM flash to boot xipImage and cramfs-xip.
+# Default value: "0"
+#OSPI_BOOT_ENC = "0"
 #
