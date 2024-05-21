@@ -367,3 +367,14 @@ CONF_VERSION = "1"
 # Default value: "0"
 #OSPI_BOOT_ENC = "0"
 #
+
+#
+# BASE_IMAGE - Config option to build images with DISTRO_FEATURES
+# apss-sd-share apss-usb apss-i2c apss-spi apss-debug apss-crc.
+# Supported values are,
+#  "1" - builds xipImage and cramfs-xip with features apss-sd-share apss-usb
+#        apss-i2c apss-spi apss-debug apss-crc.
+#  "0" - builds default tiny xipImage and cramfs-xip.
+# Default value: "0"
+# BASE_IMAGE = "0"
+#
