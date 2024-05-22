@@ -339,15 +339,6 @@ CONF_VERSION = "1"
 #
 
 #
-# HYPRAM_AS_LOWMEM - Config option to use HyperRAM (OSPI0) as low memory.
-# Supported values are,
-#  "1" - uses HyperRAM as low memory by the Linux Kernel.
-#  "0" - uses SRAM0 and SRAM1 as low memory by the Linux Kernel.
-# Default value: "0"
-#HYPRAM_AS_LOWMEM = "0"
-#
-
-#
 # OSPI_BOOT - Config option which sets parameters to boot xipImage and
 # cramfs-xip from OSPI1 NOR flash.
 # Supported values are,
@@ -375,6 +366,6 @@ CONF_VERSION = "1"
 #  "1" - builds xipImage and cramfs-xip with features apss-sd-share apss-usb
 #        apss-i2c apss-spi apss-debug apss-crc.
 #  "0" - builds default tiny xipImage and cramfs-xip.
-# Default value: "0"
-# BASE_IMAGE = "0"
+# Default value: "1"
+# BASE_IMAGE = "1"
 #
