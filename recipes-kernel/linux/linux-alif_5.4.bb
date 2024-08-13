@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Alif Semiconductor - All Rights Reserved.
+# Copyright (C) 2024 Alif Semiconductor - All Rights Reserved.
 # Use, distribution and modification of this code is permitted under the
 # terms stated in the Alif Semiconductor Software License Agreement
 #
@@ -6,12 +6,14 @@
 # License Agreement with this file. If not, please write to:
 # contact@alifsemi.com, or visit: https://alifsemi.com/license
 
-PR = "r1"
+PR = "r2"
 
 require recipes-kernel/linux/linux-yocto.inc
 require recipes-kernel/linux/linux-alif.inc
 
 SRC_URI = "${ALIF_KERNEL_TREE};branch=${ALIF_KERNEL_BRANCH}"
+
+SRC_URI += "${@bb.utils.contains('MODEM_SRAM', '1', 'file://0001-dts-Add-support-for-Linux-boot-from-Modem-SRAM.patch', '', d)}"
 
 KCONFIG_MODE="--allnoconfig"
 SRCREV ??= "${ALIF_KERNEL_BRANCH}"

@@ -1,0 +1,30 @@
+From 2a0eaee79f786647544053431c24e300fa999987 Mon Sep 17 00:00:00 2001
+From: Yogender Kumar Arya <yogender.kumar@alifsemi.com>
+Date: Fri, 5 Jul 2024 20:16:18 +0530
+Subject: [PATCH] dts: Add support for Linux boot from Modem SRAM
+
+Signed-off-by: Yogender Kumar Arya <yogender.kumar@alifsemi.com>
+---
+ arch/arm/boot/dts/devkit-e7-flatboard.dts | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/devkit-e7-flatboard.dts b/arch/arm/boot/dts/devkit-e7-flatboard.dts
+index 10499a8a346f..e04978ea2ef0 100644
+--- a/arch/arm/boot/dts/devkit-e7-flatboard.dts
++++ b/arch/arm/boot/dts/devkit-e7-flatboard.dts
+@@ -56,8 +56,11 @@
+
+ 	memory@02000000 {
+ 		device_type = "memory";
+-		reg = <0x02000000 0x400000>,
+-		      <0x08010000 0x26F000>,
++		reg = <0x62000000 0x100000>,
++		      <0x62400000 0x100000>,
++		      <0x63200000 0x200000>,
++		      <0x60000000 0x40000>,
++		      <0x60040000 0x80000>,
+ 		      <0xA0000000 0x2000000>; /* HyperRAM */
+ 		/* 64KB: 0x08000000 - 0x08010000 used by bl32.bin for SMP */
+ 		/* 4KB: 0x0827F000 - 0x0827FFFF used for MHU services */
+--
+2.17.1
