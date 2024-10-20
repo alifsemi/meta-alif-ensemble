@@ -13,17 +13,15 @@ require recipes-kernel/linux/linux-alif.inc
 
 SRC_URI = "${ALIF_KERNEL_TREE};branch=${ALIF_KERNEL_BRANCH}"
 
-SRC_URI += "${@bb.utils.contains('MODEM_SRAM', '1', 'file://0001-dts-Add-support-for-Linux-boot-from-Modem-SRAM.patch', '', d)}"
-
-KCONFIG_MODE="--allnoconfig"
+KCONFIG_MODE="--alldefconfig"
 SRCREV ??= "${ALIF_KERNEL_BRANCH}"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KERNEL_VERSION_SANITY_SKIP = "1"
 BB_GENERATE_MIRROR_TARBALLS = "0"
 
-LINUX_VERSION ?= "5.4.25"
+LINUX_VERSION ?= "6.11"
 
 PV = "${LINUX_VERSION}+git${SRCPV}"
 

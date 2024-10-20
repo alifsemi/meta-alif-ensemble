@@ -5,9 +5,10 @@ LICENSE = "BSD-3-Clause & Alif"
 LIC_FILES_CHKSUM = "file://license.rst;md5=c709b197e22b81ede21109dbffd5f363"
 DEPENDS += " dtc-native coreutils-native"
 DEPENDS += " ${TF-A_DEPENDS} "
-PR = "r30"
+PR = "r31"
 
-SRC_URI = "${TFA_TREE};branch=${TFA_BRANCH}"
+SRC_URI = "${TFA_TREE};branch=${TFA_BRANCH} \
+           file://fix-compile-error-with-binutils-2.39.patch"
 SRCREV = "${AUTOREV}"
 
 TF-A_DEPENDS ?= ""
@@ -54,7 +55,7 @@ do_deploy() {
 
 addtask deploy before do_build after do_install
 
-FILES_${PN} = "/bl32.bin"
+FILES:${PN} = "/bl32.bin"
 
 python __anonymous () {
     machine = d.getVar('MACHINE')
