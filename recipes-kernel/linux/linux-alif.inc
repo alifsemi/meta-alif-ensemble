@@ -29,7 +29,9 @@ SRC_URI_append += " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file:
 SRC_URI_append += " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
 SRC_URI_append += " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file://adc.cfg", "" ,d)}"
 
-PR .= ".14"
+SRC_URI_append += " ${@bb.utils.contains("MODEM_SRAM", "1", "file://modem-sram.cfg", "" ,d)}"
+
+PR .= ".15"
 inherit dct-kernel
 
 KERNEL_CC_append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
