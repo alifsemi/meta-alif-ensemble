@@ -28,8 +28,9 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipicsi", "file
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file://touch.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file://adc.cfg", "" ,d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-psci", "file://psci.cfg", "", d)}"
 
-PR .= ".15"
+PR .= ".16"
 inherit dct-kernel
 
 KERNEL_CC:append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
