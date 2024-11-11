@@ -30,6 +30,7 @@ SRC_URI_append += " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file:
 SRC_URI_append += " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file://adc.cfg", "" ,d)}"
 
 SRC_URI_append += " ${@bb.utils.contains("MODEM_SRAM", "1", "file://modem-sram.cfg", "" ,d)}"
+SRC_URI_append += " ${@bb.utils.contains("DISTRO_FEATURES", "apss-psci", "file://psci.cfg", "", d)}"
 
 PR .= ".15"
 inherit dct-kernel
