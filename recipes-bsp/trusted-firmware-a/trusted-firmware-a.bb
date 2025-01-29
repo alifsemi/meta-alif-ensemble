@@ -2,13 +2,12 @@ SUMMARY = "Trusted Firmware for Cortex-A"
 DESCRIPTION = "Trusted Firmware-A"
 HOMEPAGE = "https://github.com/ARM-software/arm-trusted-firmware"
 LICENSE = "BSD-3-Clause & Alif"
-LIC_FILES_CHKSUM = "file://license.rst;md5=c709b197e22b81ede21109dbffd5f363"
+LIC_FILES_CHKSUM = "file://license.rst;md5=1dd070c98a281d18d9eefd938729b031"
 DEPENDS += " dtc-native coreutils-native"
 DEPENDS += " ${TF-A_DEPENDS} "
-PR = "r31"
+PR = "r32"
 
-SRC_URI = "${TFA_TREE};branch=${TFA_BRANCH} \
-           file://fix-compile-error-with-binutils-2.39.patch"
+SRC_URI = "${TFA_TREE};branch=${TFA_BRANCH}"
 SRCREV = "${AUTOREV}"
 
 TF-A_DEPENDS ?= ""
