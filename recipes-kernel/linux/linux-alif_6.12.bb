@@ -6,7 +6,7 @@
 # License Agreement with this file. If not, please write to:
 # contact@alifsemi.com, or visit: https://alifsemi.com/license
 
-PR = "r3"
+PR = "r4"
 
 require recipes-kernel/linux/linux-yocto.inc
 require recipes-kernel/linux/linux-alif.inc
@@ -30,6 +30,6 @@ S = "${WORKDIR}/git"
 #do_kernel_configme() {
 #}
 
-KERNEL_CONFIG_COMMAND = "oe_runmake_call -C ${S} O=${B} ${KBUILD_DEFCONFIG}"
+#KERNEL_CONFIG_COMMAND = "oe_runmake_call -C ${S} O=${B} ${KBUILD_DEFCONFIG}"
 
 COMPATIBLE_MACHINE = "(devkit-e).*|(appkit-e).*"

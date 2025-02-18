@@ -29,8 +29,8 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file:/
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file://adc.cfg", "" ,d)}"
 
-PR .= ".14"
-#inherit dct-kernel
+PR .= ".15"
+inherit dct-kernel
 
 KERNEL_CC:append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
 
