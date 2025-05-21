@@ -29,6 +29,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file:/
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file://adc.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-psci", "file://psci.cfg", "", d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cmp", "file://cmp.cfg", "", d)}"
 
 PR .= ".16"
 inherit dct-kernel
