@@ -64,6 +64,6 @@ python __anonymous () {
     machine = d.getVar('MACHINE')
     smp = d.getVar('SMP')
 
-    if machine == 'devkit-e5' and smp == '1':
+    if machine == 'devkit-e6' and smp == '1':
         bb.fatal("Machine %s does not support SMP. Try building images without SMP (SMP = '0')" %(machine));
 }
