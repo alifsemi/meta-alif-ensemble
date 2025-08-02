@@ -378,20 +378,15 @@ CONF_VERSION = "2"
 #
 # HyperRAM Configuration Options
 #
-# There are two mutually exclusive HyperRAM modes:
-#
-# 1. HYPRAM_ONLY - Enables HyperRAM only (disables stitch SRAM)
+# HYPRAM_ONLY - Controls using HyperRAM as a standalone or combine with SRAM
 #    - "1": Boot Linux using HyperRAM only
-#    - "0": Disable this mode (default)
-#
-# 2. HYPRAM_STITCH - Enables HyperRAM with stitch SRAM
-#    - "1": Boot Linux using HyperRAM with stitch SRAM
-#    - "0": Disable this mode (default)
+#    - "0": STITCH SRAM + HYPRAM
+#    - "": SRAM STITCH ONLY (default)
 #
 # Default configuration (stitch SRAM only):
-#HYPRAM_ONLY = "0"
-#HYPRAM_STITCH = "0
+#HYPRAM_ONLY = ""
 #
+
 
 #
 # BASE_IMAGE - Config option to build images with DISTRO_FEATURES
