@@ -392,9 +392,17 @@ CONF_VERSION = "2"
 # BASE_IMAGE - Config option to build images with DISTRO_FEATURES
 # apss-sd-share apss-usb apss-i2c apss-spi apss-debug apss-crc.
 # Supported values are,
-#  "1" - builds xipImage and cramfs-xip with features apss-sd-share apss-usb
-#        apss-i2c apss-spi apss-debug apss-crc.
+#  "1" - builds xipImage and cramfs-xip
 #  "0" - builds default tiny xipImage and cramfs-xip.
 # Default value: "1"
 # BASE_IMAGE = "1"
+#
+
+# BASE_IMAGE2 or BASE_IMAGE3 - Config option to build images with DISTRO_FEATURES
+# apss-sd-share apss-usb apss-i2c apss-spi apss-debug apss-crc apss-ethernet apss-i2s apss-i3c apss-pdm apss-utimer.
+# Supported values are,
+#  "1" - builds xipImage and cramfs-xip
+#  "0" - builds default tiny xipImage and cramfs-xip.
+# Default value: "1"
+# BASE_IMAGE2 = "1"
 #
