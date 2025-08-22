@@ -31,8 +31,9 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file:/
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-psci", "file://psci.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cmp", "file://cmp.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-perf", "file://perf.cfg", "", d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-dac12", "file://dac.cfg", "", d)}"
 
-PR .= ".17"
+PR .= ".18"
 inherit dct-kernel
 
 KERNEL_CC:append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
