@@ -403,7 +403,7 @@ CONF_VERSION = "2"
 # Supported values are,
 #  "1" - builds xipImage and cramfs-xip
 #  "0" - builds default tiny xipImage and cramfs-xip.
-# Default value: "1"
+# Default value: "0"
 # BASE_IMAGE2 = "1"
 #
 
@@ -414,14 +414,6 @@ CONF_VERSION = "2"
 #  "0" - builds default tiny xipImage and cramfs-xip.
 # Default value: "0"
 # BASE_IMAGE5 = "1"
-#
-
-
-# ADC_MODE - Config option to select ADC12 or ADC24
-#
-# Supported values are,
-#  "1" - builds xipImage and cramfs-xip
-#  "0" - build default tiny xipImage and cramfs-xip
-# Default value: "0"
-#ADC_MODE = "0"
+# Supported values are: "adc12" or "adc24"
+# ADC_MODE = "adc12"
 #
