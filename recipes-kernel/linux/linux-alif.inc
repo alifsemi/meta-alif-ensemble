@@ -32,6 +32,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-psci", "file://
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cmp", "file://cmp.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-perf", "file://perf.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-dac12", "file://dac.cfg", "", d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-ethosu", "file://ethosu.cfg", "", d)}"
 
 PR .= ".18"
 inherit dct-kernel
