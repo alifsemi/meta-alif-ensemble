@@ -61,7 +61,29 @@ do_aes_enc() {
  fi
 }
 
-addtask aes_enc before do_install after do_compile
+do_mx_rev16() {
+ if [ "${MX_FLASH_EN}" = "1" ] ; then
+    for iter in ${KERNEL_IMAGETYPES} ; do
+        if [ "$iter" = "xipImage" ] ; then
+            mv ${B}/${KERNEL_OUTPUT_DIR}/$iter ${B}/${KERNEL_OUTPUT_DIR}/$iter.bin
+            # Pad file to even size if needed (objcopy --reverse-bytes=2 requires even length)
+            filesize=`stat -c%s "${B}/${KERNEL_OUTPUT_DIR}/$iter.bin"`
+            remainder=`expr $filesize % 2 || true`
+            if [ $remainder -ne 0 ]; then
+                printf '\0' >> ${B}/${KERNEL_OUTPUT_DIR}/$iter.bin
+            fi
+	    arm-poky-linux-musleabi-objcopy -I binary -O binary --reverse-bytes=2 ${B}/${KERNEL_OUTPUT_DIR}/$iter.bin ${B}/${KERNEL_OUTPUT_DIR}/$iter.rev16.bin
+            mv ${B}/${KERNEL_OUTPUT_DIR}/$iter.rev16.bin ${B}/${KERNEL_OUTPUT_DIR}/$iter
+        fi
+    done
+ fi
+}
+
+do_aes_enc[vardeps] += "AES_EN KERNEL_IMAGETYPES"
+do_mx_rev16[vardeps] += "MX_FLASH_EN KERNEL_IMAGETYPES DISTRO_FEATURES"
+
+addtask aes_enc before do_mx_rev16 after do_compile
+addtask mx_rev16 before do_install after do_aes_enc
 
 python __anonymous () {
     machine = d.getVar('MACHINE')

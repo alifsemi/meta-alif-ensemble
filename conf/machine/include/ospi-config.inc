@@ -6,7 +6,8 @@
 # License Agreement with this file. If not, please write to:
 # contact@alifsemi.com, or visit: https://alifsemi.com/license
 
-FLASH_EN ?= "1"
+ISSI_FLASH_EN ?= "${@'1' if d.getVar('MACHINE').startswith('devkit-e') else '0'}"
+MX_FLASH_EN ?= "${@'1' if d.getVar('MACHINE').startswith('appkit-e') else '0'}"
 KERNEL_MTD_START_ADDR ?= "0xC0000000"
 KERNEL_MTD_LEN ?= "0x400000"
 XIP_KERNEL_LOAD_ADDR ?= "0xC0800000"

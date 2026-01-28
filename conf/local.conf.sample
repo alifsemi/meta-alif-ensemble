@@ -291,19 +291,19 @@ CONF_VERSION = "2"
 # Default value: "2"
 #UART = "2"
 
-# HYPRAM_EN - Enables OSPI0 NOR flash (0xA0000000) as a HyperRAM.
+# ISSI_HYPERRAM_EN/AP_HYPERRAM_EN - Enables OSPI0 NOR flash (0xA0000000) as a HyperRAM for E8 Devkit/Appkit.
 # Supported values are,
-#  "1" - enable OSPI0 as a HyperRAM.
+#  "1" - enable OSPI0 as a HyperRAM for E8 Devkit/Appkit.
 #  "0" - disable OSPI0 as a HyperRAM.
 # Default value: "1"
-#HYPRAM_EN = "1"
+#ISSI_HYPERRAM_EN/AP_HYPERRAM_EN = "1"
 
-# FLASH_EN - Enables OSPI1 NOR flash (0xC0000000) in XiP mode.
+# ISSI_FLASH_EN/MX_FLASH_EN - Enables OSPI1 NOR flash (0xC0000000) in XiP mode.
 # Supported values are,
 #  "1" - enable OSPI1 in XiP mode.
 #  "0" - disable OSPI1 in XiP mode.
 # Default value: "0"
-#FLASH_EN = "0"
+#ISSI_FLASH_EN/MX_FLASH_EN = "0"
 
 #
 # AES_EN - Enables code in the arm-tf to decrypt the AES encrypted
