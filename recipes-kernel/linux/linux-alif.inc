@@ -16,6 +16,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-usb", "file://u
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-spi", "file://spi.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-ethernet", "file://ethernet.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-usb-host", "file://usb_host.cfg", "" ,d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-usb-boot", "file://usb_boot.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cdc200", "file://cdc200.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-i2c-i3c", "file://i2c-i3c.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-i2s", "file://i2s.cfg", "" ,d)}"
@@ -34,7 +35,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-perf", "file://
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-dac12", "file://dac.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-ethosu", "file://ethosu.cfg", "", d)}"
 
-PR .= ".18"
+PR .= ".19"
 inherit dct-kernel
 
 KERNEL_CC:append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
