@@ -417,3 +417,21 @@ CONF_VERSION = "2"
 # Supported values are: "adc12" or "adc24"
 # ADC_MODE = "adc12"
 #
+
+# BASE_IMAGE6  - Config option to build images with DISTRO_FEATURES
+# apss-sd-boot apss-usb apss-i2c apss-spi apss-debug apss-crc apss-ethernet apss-i2s apss-i3c apss-pdm apss-utimer.
+# Supported values are,
+#  "1" - builds xipImage and cramfs-xip
+#  "0" - builds default tiny xipImage and cramfs-xip.
+# Default value: "0"
+# BASE_IMAGE6 = "1"
+#
+
+# BASE_IMAGE7  - Config option to build images with DISTRO_FEATURES
+# apss-usb-boot apss-sd-share apss-i2c apss-spi apss-debug apss-crc apss-ethernet apss-i2s apss-i3c apss-pdm apss-utimer.
+# Supported values are,
+#  "1" - builds xipImage and cramfs-xip
+#  "0" - builds default tiny xipImage and cramfs-xip.
+# Default value: "0"
+# BASE_IMAGE7 = "1"
+#
