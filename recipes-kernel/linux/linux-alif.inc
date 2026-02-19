@@ -63,7 +63,7 @@ do_aes_enc() {
 }
 
 do_mx_rev16() {
- if [ "${MX_FLASH_EN}" = "1" ] && [ "${BASE_IMAGE2}" = "0" ]; then
+ if [ "${MX_FLASH_EN}" = "1"  &&  "${BASE_IMAGE2}" = "0" ]; then
     for iter in ${KERNEL_IMAGETYPES} ; do
         if [ "$iter" = "xipImage" ] ; then
             mv ${B}/${KERNEL_OUTPUT_DIR}/$iter ${B}/${KERNEL_OUTPUT_DIR}/$iter.bin
