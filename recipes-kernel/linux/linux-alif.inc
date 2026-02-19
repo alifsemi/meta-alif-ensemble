@@ -63,7 +63,7 @@ do_aes_enc() {
 }
 
 do_mx_rev16() {
- if [ "${MX_FLASH_EN}" = "1" ] ; then
+ if [ "${MX_FLASH_EN}" = "1" ] && [ "${BASE_IMAGE2}" = "0" ]; then
     for iter in ${KERNEL_IMAGETYPES} ; do
         if [ "$iter" = "xipImage" ] ; then
             mv ${B}/${KERNEL_OUTPUT_DIR}/$iter ${B}/${KERNEL_OUTPUT_DIR}/$iter.bin
@@ -81,7 +81,7 @@ do_mx_rev16() {
 }
 
 do_aes_enc[vardeps] += "AES_EN KERNEL_IMAGETYPES"
-do_mx_rev16[vardeps] += "MX_FLASH_EN KERNEL_IMAGETYPES DISTRO_FEATURES"
+do_mx_rev16[vardeps] += "MX_FLASH_EN KERNEL_IMAGETYPES DISTRO_FEATURES BASE_IMAGE2"
 
 addtask aes_enc before do_mx_rev16 after do_compile
 addtask mx_rev16 before do_install after do_aes_enc
