@@ -259,10 +259,14 @@ CONF_VERSION = "2"
 
 # BL32_XIP_BASE - A hex address indicating the load/boot address
 # of bl32.bin is executed from XiP memory i.e if BL32_IN_XIP_MEM
-# is "1" else unused. This address should be 4MB aligned i.e., the
-# last 3 nibbles of the hex address should be zero.
+# is "1" else unused. Passed to TF-A as ALIF_BL32_XIP_BASE.
 # Default value: "0x80002000"
 #BL32_XIP_BASE = "0x80002000"
+
+# ALIF_SOC_E8 - Select E8-only BL32 register programming (OSPI clock
+# enables and NPU-HG). Use "1" for E8 boards, "0" for E6/E7.
+# Machine confs set an appropriate default.
+#ALIF_SOC_E8 = "1"
 
 # XIP_KERNEL_LOAD_ADDR - A hex address indicating the boot address of xipImage.
 # This address should be 32bit aligned i.e. the 5 bits of LSB should be 0.
