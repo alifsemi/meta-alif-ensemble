@@ -263,8 +263,8 @@ CONF_VERSION = "2"
 # Default value: "0x80002000"
 #BL32_XIP_BASE = "0x80002000"
 
-# ALIF_SOC_E8 - Select E8-only BL32 register programming (OSPI clock
-# enables and NPU-HG). Use "1" for E8 boards, "0" for E6/E7.
+# ALIF_SOC_E8 - Select E6/E8 BL32 register programming (OSPI clock
+# enables and NPU-HG). Use "1" for E6/E8 boards, "0" for E7.
 # Machine confs set an appropriate default.
 #ALIF_SOC_E8 = "1"
 
