@@ -35,6 +35,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-perf", "file://
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-dac12", "file://dac.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-ethosu", "file://ethosu.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cpufreq", "file://cpufreq.cfg", "", d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-wifi", "file://wifi.cfg", "", d)}"
 
 PR .= ".20"
 inherit dct-kernel
