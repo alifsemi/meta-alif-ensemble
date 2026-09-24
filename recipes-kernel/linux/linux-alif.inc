@@ -26,6 +26,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-crc", "file://c
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-pdm", "file://pdm.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-i2c", "file://i2c.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipicsi", "file://mipicsi.cfg", "" ,d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipidsi", "file://mipidsi.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file://touch.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file://adc.cfg", "" ,d)}"
