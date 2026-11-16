@@ -27,7 +27,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-pdm", "file://p
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-i2c", "file://i2c.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipicsi", "file://mipicsi.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipidsi", "file://mipidsi.cfg", "" ,d)}"
-SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file://touch.cfg", "" ,d)}"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file://touch.cfg file://goodix_911_cfg.bin", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc24", "file://adc.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-psci", "file://psci.cfg", "", d)}"
@@ -39,7 +39,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cpufreq", "file
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-wifi", "file://wifi.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-d2d", "file://d2d.cfg", "" ,d)}"
 
-PR .= ".22"
+PR .= ".23"
 inherit dct-kernel
 
 KERNEL_CC:append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
@@ -50,6 +50,12 @@ do_compile:prepend () {
         sed -i "s:^CONFIG_MTD_PHYSMAP_START=.*:CONFIG_MTD_PHYSMAP_START=${KERNEL_MTD_START_ADDR}:g" ${B}/.config
         sed -i "s:^CONFIG_MTD_PHYSMAP_LEN=.*:CONFIG_MTD_PHYSMAP_LEN=${KERNEL_MTD_LEN}:g" ${B}/.config
         sed -i "s:^CONFIG_PHYS_OFFSET=.*:CONFIG_PHYS_OFFSET=${KERNEL_XIP_RAM}:g" ${B}/.config
+    fi
+    # touch.cfg embeds goodix_911_cfg.bin from firmware/ under the kernel
+    # source tree. The blob is shipped by this recipe, not by the kernel git tree.
+    if [ -f "${WORKDIR}/goodix_911_cfg.bin" ]; then
+        mkdir -p "${S}/firmware"
+        cp -f "${WORKDIR}/goodix_911_cfg.bin" "${S}/firmware/goodix_911_cfg.bin"
     fi
 }
 
