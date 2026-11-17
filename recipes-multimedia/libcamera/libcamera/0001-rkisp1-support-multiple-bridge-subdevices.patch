@@ -1,0 +1,143 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+Date: Thu, 15 Oct 2026 13:15:00 +0530
+Subject: [PATCH] pipeline: rkisp1: Support multiple bridge subdevices
+
+The rkisp1 pipeline handler currently follows at most one video
+interface bridge between a sensor and the ISP. The Alif Ensemble E8
+camera pipeline contains two:
+
+  sensor -> CSI-2 receiver -> CPI -> rkisp1
+
+Walk all consecutive bridge entities during discovery. Keep the links
+and source pads so configure() can propagate the media-bus format from
+the sensor through every bridge, including format conversions performed
+by a bridge, before configuring the ISP sink.
+
+Upstream-Status: Pending
+Signed-off-by: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+---
+ src/libcamera/pipeline/rkisp1/rkisp1.cpp | 63 ++++++++++++++++++++++++--------
+ 1 file changed, 47 insertions(+), 16 deletions(-)
+
+diff --git a/src/libcamera/pipeline/rkisp1/rkisp1.cpp b/src/libcamera/pipeline/rkisp1/rkisp1.cpp
+index 35c793da9..59da8bb24 100644
+--- a/src/libcamera/pipeline/rkisp1/rkisp1.cpp
++++ b/src/libcamera/pipeline/rkisp1/rkisp1.cpp
+@@ -199,7 +199,9 @@ private:
+ 	std::unique_ptr<V4L2Subdevice> isp_;
+ 	std::unique_ptr<V4L2VideoDevice> param_;
+ 	std::unique_ptr<V4L2VideoDevice> stat_;
+-	std::unique_ptr<V4L2Subdevice> csi_;
++	std::vector<std::unique_ptr<V4L2Subdevice>> bridges_;
++	std::vector<MediaLink *> bridgeLinks_;
++	std::vector<unsigned int> bridgeSourcePads_;
+ 
+ 	bool hasSelfPath_;
+ 	bool isRaw_;
+@@ -830,8 +832,19 @@ int PipelineHandlerRkISP1::configure(Camera *camera, CameraConfiguration *c)
+ 
+ 	LOG(RkISP1, Debug) << "Sensor configured with " << format;
+ 
+-	if (csi_) {
+-		ret = csi_->setFormat(0, &format);
++	/*
++	 * The bridges are stored from the ISP towards the sensor. Configure
++	 * them in the opposite direction and read each source format back so
++	 * format conversions performed by a bridge reach the next entity.
++	 */
++	for (unsigned int i = bridges_.size(); i > 0; --i) {
++		unsigned int index = i - 1;
++
++		ret = bridges_[index]->setFormat(0, &format);
++		if (ret < 0)
++			return ret;
++
++		ret = bridges_[index]->getFormat(bridgeSourcePads_[index], &format);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+@@ -1238,9 +1251,7 @@ int PipelineHandlerRkISP1::initLinks(Camera *camera,
+ 			return ret;
+ 	}
+ 
+-	if (csi_) {
+-		MediaLink *link = isp_->entity()->getPadByIndex(0)->links().at(0);
+-
++	for (MediaLink *link : bridgeLinks_) {
+ 		ret = link->setEnabled(true);
+ 		if (ret < 0)
+ 			return ret;
+@@ -1362,8 +1373,6 @@ int PipelineHandlerRkISP1::createCamera(MediaEntity *sensor)
+ 
+ bool PipelineHandlerRkISP1::match(DeviceEnumerator *enumerator)
+ {
+-	const MediaPad *pad;
+-
+ 	DeviceMatch dm("rkisp1");
+ 	dm.add("rkisp1_isp");
+ 	dm.add("rkisp1_resizer_mainpath");
+@@ -1388,22 +1397,38 @@ bool PipelineHandlerRkISP1::match(DeviceEnumerator *enumerator)
+ 	if (isp_->open() < 0)
+ 		return false;
+ 
+-	/* Locate and open the optional CSI-2 receiver. */
++	/* Locate and open all bridges between the ISP and the sensor. */
+ 	ispSink_ = isp_->entity()->getPadByIndex(0);
+-	if (!ispSink_ || ispSink_->links().empty())
++	if (!ispSink_)
+ 		return false;
+ 
+-	pad = ispSink_->links().at(0)->source();
+-	if (pad->entity()->function() == MEDIA_ENT_F_VID_IF_BRIDGE) {
+-		csi_ = std::make_unique<V4L2Subdevice>(pad->entity());
+-		if (csi_->open() < 0)
++	while (!ispSink_->links().empty()) {
++		MediaLink *link = ispSink_->links().at(0);
++		const MediaPad *source = link->source();
++
++		if (source->entity()->function() != MEDIA_ENT_F_VID_IF_BRIDGE)
++			break;
++
++		std::unique_ptr<V4L2Subdevice> bridge =
++			std::make_unique<V4L2Subdevice>(source->entity());
++		if (bridge->open() < 0)
+ 			return false;
+ 
+-		ispSink_ = csi_->entity()->getPadByIndex(0);
++		LOG(RkISP1, Debug)
++			<< "Found bridge '" << source->entity()->name() << "'";
++
++		bridgeLinks_.push_back(link);
++		bridgeSourcePads_.push_back(source->index());
++		ispSink_ = bridge->entity()->getPadByIndex(0);
+ 		if (!ispSink_)
+ 			return false;
++
++		bridges_.push_back(std::move(bridge));
+ 	}
+ 
++	if (ispSink_->links().empty())
++		return false;
++
+ 	/* Locate and open the stats and params video nodes. */
+ 	stat_ = V4L2VideoDevice::fromEntityName(media_, "rkisp1_stats");
+ 	if (stat_->open() < 0)
+@@ -1455,8 +1480,14 @@ bool PipelineHandlerRkISP1::match(DeviceEnumerator *enumerator)
+ 	 */
+ 	bool registered = false;
+ 	for (MediaLink *link : ispSink_->links()) {
+-		if (!createCamera(link->source()->entity()))
++		MediaEntity *entity = link->source()->entity();
++		int ret = createCamera(entity);
++		if (!ret)
+ 			registered = true;
++		else
++			LOG(RkISP1, Error)
++				<< "Failed to create camera from '"
++				<< entity->name() << "': " << ret;
+ 	}
+ 
+ 	return registered;
+-- 
+2.43.0

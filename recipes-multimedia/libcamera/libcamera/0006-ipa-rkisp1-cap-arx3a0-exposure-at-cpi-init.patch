@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+Date: Sun, 22 Nov 2026 22:30:00 +0530
+Subject: [PATCH] ipa: rkisp1: Cap the ARX3A0 exposure at the CPI init value
+
+In a dim scene the AGC measured the frame about 100x below its target
+and asked for the maximum exposure, 0xA47A lines (frame length minus
+one). From the first AGC result onward the frames came back flat at the
+sensor pedestal (mean Y about 38) instead of the dim scene (mean Y
+about 56).
+
+Cap the AGC exposure at the init-table coarse integration, 0x366A, so
+a dim scene is brightened with analogue gain. Apply the same limit
+where the exposure control is written.
+
+Upstream-Status: Inappropriate [Alif ARX3A0 / ISP8000Pico board tuning]
+Signed-off-by: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+---
+
+--- a/src/ipa/rkisp1/rkisp1.cpp
++++ b/src/ipa/rkisp1/rkisp1.cpp
+@@ -304,11 +304,14 @@
+ 	context_.configuration.sensor.minExposureTime =
+ 		minExposure * context_.configuration.sensor.lineDuration;
+ 	/*
+-	 * The RAW10 init table programs frame length 0xA47B. Coarse
+-	 * integration above that does not produce a frame. 65535 is
+-	 * the old V4L2 max and is what made the start/end frames black.
++	 * The RAW10 init table programs frame length 0xA47B, and coarse
++	 * integration above that does not produce a frame. In a dim scene
++	 * the AGC also drove R0x3012 to 0xA47A (frame length minus one)
++	 * and the frames came back flat at the sensor pedestal. Cap the
++	 * AGC at the init-table integration and let it use analogue gain
++	 * for the rest.
+ 	 */
+-	constexpr int32_t kMaxCoarseLines = 0xA47A;
++	constexpr int32_t kMaxCoarseLines = 0x366A;
+ 	if (maxExposure > kMaxCoarseLines)
+ 		maxExposure = kMaxCoarseLines;
+ 	context_.configuration.sensor.maxExposureTime =
+@@ -509,7 +512,7 @@
+ 
+ 	if (exposure < static_cast<uint32_t>(std::max(minExposure, 1)))
+ 		exposure = defExposure > 0 ? defExposure : 1;
+-	constexpr uint32_t kMaxCoarseLines = 0xA47A;
++	constexpr uint32_t kMaxCoarseLines = 0x366A;
+ 	uint32_t maxLines = kMaxCoarseLines;
+ 	if (maxExposure > 0 && static_cast<uint32_t>(maxExposure) < maxLines)
+ 		maxLines = maxExposure;

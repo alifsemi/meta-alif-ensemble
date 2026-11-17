@@ -1,0 +1,188 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+Date: Mon, 26 Oct 2026 13:30:00 +0530
+Subject: [PATCH] ipa: rkisp1: Start ARX3A0 at the CPI exposure
+
+A CPI dump leaves the ARX3A0 init table at coarse integration 13930
+(0x366A) and analogue gain code 4 (2.0x). Start the IPA from those
+values instead of a 33 ms request, which became a much shorter
+exposure. Cap coarse integration at the init-table frame length minus
+one (0xA47A), and hold the seed when the statistics are empty.
+
+Add a Pico tuning file for ARX3A0 with 5x5 metering, identity AWB
+gains, a 2.2 gamma-out, and black level 0, and install it from
+meson.build. The sensor helper black level is 0 so the tuning file
+sets the value.
+
+Upstream-Status: Inappropriate [Alif ARX3A0 / ISP8000Pico board tuning]
+Signed-off-by: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+---
+
+--- a/src/ipa/libipa/camera_sensor_helper.cpp
++++ b/src/ipa/libipa/camera_sensor_helper.cpp
+@@ -480,6 +480,8 @@
+ 	{
+ 		/* AND9784 R0x3028: gain = code * 0.5, recommended 1.0x-8.0x. */
+ 		gain_ = AnalogueGainLinear{ 1, 0, 0, 2 };
++		/* Board captures are better with BLS 0. Yaml overrides this. */
++		blackLevel_ = 0;
+ 	}
+ };
+ REGISTER_CAMERA_SENSOR_HELPER("arx3a0", CameraSensorHelperArx3a0)
+--- a/src/ipa/rkisp1/algorithms/agc.cpp
++++ b/src/ipa/rkisp1/algorithms/agc.cpp
+@@ -424,6 +424,28 @@
+ 		       [](uint32_t x) { return x >> 4; });
+ 	expMeans_ = { params->ae.exp_mean, context.hw->numAeCells };
+ 
++	bool allZero = true;
++	for (uint8_t y : expMeans_) {
++		if (y) {
++			allZero = false;
++			break;
++		}
++	}
++	if (allZero) {
++		constexpr uint32_t kCpiExposureLines = 0x366A;
++		double seedGain = context.configuration.sensor.minAnalogueGain;
++		if (context.camHelper)
++			seedGain = std::max(seedGain, context.camHelper->gain(4));
++		context.activeState.agc.automatic.exposure = kCpiExposureLines;
++		context.activeState.agc.automatic.gain = seedGain;
++		LOG(RkISP1Agc, Debug)
++			<< "AE means are zero; holding CPI exposure "
++			<< kCpiExposureLines << " / " << seedGain;
++		fillMetadata(context, frameContext, metadata);
++		expMeans_ = {};
++		return;
++	}
++
+ 	utils::Duration maxExposureTime =
+ 		std::clamp(frameContext.agc.maxFrameDuration,
+ 			   context.configuration.sensor.minExposureTime,
+--- /dev/null
++++ b/src/ipa/rkisp1/data/arx3a0.yaml
+@@ -0,0 +1,37 @@
++# SPDX-License-Identifier: CC0-1.0
++%YAML 1.1
++---
++# Pico-only ARX3A0 tuning. No LSC, AF, DPF, or WDR — this ISP build
++# does not have those blocks. Board captures are better with BLS 0
++# than with the 10-bit pedestal (AND9784 R0x301E 0x002A -> 16-bit 672).
++# Yaml values override the helper so the board can retune without rebuild.
++version: 1
++algorithms:
++  - Agc:
++      AeMeteringMode:
++        MeteringMatrix: [
++          1, 1, 1, 1, 1,
++          1, 1, 1, 1, 1,
++          1, 1, 1, 1, 1,
++          1, 1, 1, 1, 1,
++          1, 1, 1, 1, 1
++        ]
++  - Awb:
++      colourGains:
++        - ct: 5000
++          gains: [ 1.0, 1.0 ]
++  - BlackLevelCorrection:
++      # 16-bit units. BLC writes these >> 4 to the 12-bit BLS block.
++      # 0 -> BLS 0. 672 crushed indoor frames on this CPI path.
++      R: 0
++      Gr: 0
++      Gb: 0
++      B: 0
++  - Ccm:
++      ccms:
++        - ct: 5000
++          ccm: [ 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 ]
++          offsets: [ 0, 0, 0 ]
++  - ColorProcessing:
++  - GammaOutCorrection:
++      gamma: 2.2
+--- a/src/ipa/rkisp1/data/meson.build
++++ b/src/ipa/rkisp1/data/meson.build
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: CC0-1.0
+ 
+ conf_files = files([
++    'arx3a0.yaml',
+     'imx219.yaml',
+     'imx258.yaml',
+     'ov2685.yaml',
+--- a/src/ipa/rkisp1/rkisp1.cpp
++++ b/src/ipa/rkisp1/rkisp1.cpp
+@@ -222,6 +222,34 @@
+ 
+ int IPARkISP1::start()
+ {
++	IPAFrameContext &frameContext = context_.frameContexts.alloc(0);
++
++	frameContext.agc.exposure = context_.activeState.agc.automatic.exposure;
++	frameContext.agc.gain = context_.activeState.agc.automatic.gain;
++	frameContext.agc.autoEnabled = context_.activeState.agc.autoEnabled;
++
++	/*
++	 * AGC configure() starts at 10 ms. A CPI dump leaves the RAW10
++	 * init-table coarse integration (0x366A, 13930 lines) and gain
++	 * code 4. Match that, or the first frames are several times
++	 * darker than the raw dump. DelayedControls applies this a
++	 * couple of frames late; the sensor driver restores the same
++	 * line count before stream-on.
++	 */
++	constexpr uint32_t kCpiExposureLines = 0x366A;
++	if (frameContext.agc.exposure < kCpiExposureLines)
++		frameContext.agc.exposure = kCpiExposureLines;
++	double minFirstGain = context_.camHelper->gain(4);
++	if (frameContext.agc.gain < minFirstGain)
++		frameContext.agc.gain = minFirstGain;
++
++	/*
++	 * prepare() copies activeState into every later frame. Keep the
++	 * seed here so AGC does not immediately fall back to 10 ms / 1.0x.
++	 */
++	context_.activeState.agc.automatic.exposure = frameContext.agc.exposure;
++	context_.activeState.agc.automatic.gain = frameContext.agc.gain;
++
+ 	setControls(0);
+ 
+ 	return 0;
+@@ -275,6 +303,14 @@
+ 	 */
+ 	context_.configuration.sensor.minExposureTime =
+ 		minExposure * context_.configuration.sensor.lineDuration;
++	/*
++	 * The RAW10 init table programs frame length 0xA47B. Coarse
++	 * integration above that does not produce a frame. 65535 is
++	 * the old V4L2 max and is what made the start/end frames black.
++	 */
++	constexpr int32_t kMaxCoarseLines = 0xA47A;
++	if (maxExposure > kMaxCoarseLines)
++		maxExposure = kMaxCoarseLines;
+ 	context_.configuration.sensor.maxExposureTime =
+ 		maxExposure * context_.configuration.sensor.lineDuration;
+ 	context_.configuration.sensor.minAnalogueGain =
+@@ -464,6 +500,23 @@
+ 	IPAFrameContext &frameContext = context_.frameContexts.get(frame);
+ 	uint32_t exposure = frameContext.agc.exposure;
+ 	uint32_t gain = context_.camHelper->gainCode(frameContext.agc.gain);
++	const auto itExp = sensorControls_.find(V4L2_CID_EXPOSURE);
++	const auto itGain = sensorControls_.find(V4L2_CID_ANALOGUE_GAIN);
++	int32_t minExposure = itExp->second.min().get<int32_t>();
++	int32_t maxExposure = itExp->second.max().get<int32_t>();
++	int32_t defExposure = itExp->second.def().get<int32_t>();
++	int32_t minGain = itGain->second.min().get<int32_t>();
++
++	if (exposure < static_cast<uint32_t>(std::max(minExposure, 1)))
++		exposure = defExposure > 0 ? defExposure : 1;
++	constexpr uint32_t kMaxCoarseLines = 0xA47A;
++	uint32_t maxLines = kMaxCoarseLines;
++	if (maxExposure > 0 && static_cast<uint32_t>(maxExposure) < maxLines)
++		maxLines = maxExposure;
++	if (exposure > maxLines)
++		exposure = maxLines;
++	if (static_cast<int32_t>(gain) < minGain)
++		gain = minGain;
+ 
+ 	ControlList ctrls(sensorControls_);
+ 	ctrls.set(V4L2_CID_EXPOSURE, static_cast<int32_t>(exposure));
