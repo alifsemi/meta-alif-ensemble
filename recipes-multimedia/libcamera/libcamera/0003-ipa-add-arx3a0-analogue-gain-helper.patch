@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+Date: Mon, 19 Oct 2026 14:20:00 +0530
+Subject: [PATCH] ipa: libipa: Add ARX3A0 analogue gain helper
+
+AND9784 R0x3028 is a linear analogue gain in 0.5x steps. Convert
+V4L2_CID_ANALOGUE_GAIN codes with gain = code / 2 so the rkisp1
+IPA can drive the 1.0x-8.0x range recommended by ARX3A0-D and
+AND9861.
+
+Upstream-Status: Pending
+Signed-off-by: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+---
+ src/ipa/libipa/camera_sensor_helper.cpp | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/src/ipa/libipa/camera_sensor_helper.cpp b/src/ipa/libipa/camera_sensor_helper.cpp
+index 7c66cd57d..92cd52c14 100644
+--- a/src/ipa/libipa/camera_sensor_helper.cpp
++++ b/src/ipa/libipa/camera_sensor_helper.cpp
+@@ -473,6 +473,17 @@ private:
+ };
+ REGISTER_CAMERA_SENSOR_HELPER("ar0521", CameraSensorHelperAr0521)
+ 
++class CameraSensorHelperArx3a0 : public CameraSensorHelper
++{
++public:
++	CameraSensorHelperArx3a0()
++	{
++		/* AND9784 R0x3028: gain = code * 0.5, recommended 1.0x-8.0x. */
++		gain_ = AnalogueGainLinear{ 1, 0, 0, 2 };
++	}
++};
++REGISTER_CAMERA_SENSOR_HELPER("arx3a0", CameraSensorHelperArx3a0)
++
+ class CameraSensorHelperGc05a2 : public CameraSensorHelper
+ {
+ public:
+-- 
+2.43.0

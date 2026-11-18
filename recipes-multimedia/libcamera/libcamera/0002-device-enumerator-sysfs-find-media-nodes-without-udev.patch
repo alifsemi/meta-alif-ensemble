@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+Date: Thu, 15 Oct 2026 15:05:00 +0530
+Subject: [PATCH] device_enumerator: sysfs: Find media nodes without udev
+
+The sysfs enumerator only looked under historical media class paths.
+On the Alif Iota tiny image there is no udevd and /sys/class/media
+is not populated, but /dev/mediaN still exists. Also search
+/sys/class/media and /dev so libcamera can open the rkisp1 graph
+when built with -Dudev=disabled.
+
+Upstream-Status: Pending
+Signed-off-by: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+---
+ src/libcamera/device_enumerator_sysfs.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/libcamera/device_enumerator_sysfs.cpp b/src/libcamera/device_enumerator_sysfs.cpp
+index 7866885c0..b168ec9e0 100644
+--- a/src/libcamera/device_enumerator_sysfs.cpp
++++ b/src/libcamera/device_enumerator_sysfs.cpp
+@@ -39,6 +39,8 @@ int DeviceEnumeratorSysfs::enumerate()
+ 		"/sys/subsystem/media/devices",
+ 		"/sys/bus/media/devices",
+ 		"/sys/class/media/devices",
++		"/sys/class/media",
++		"/dev",
+ 	};
+ 
+ 	for (const char *dirname : sysfs_dirs) {
+-- 
+2.43.0

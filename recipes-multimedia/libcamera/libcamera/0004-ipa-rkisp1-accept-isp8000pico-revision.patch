@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+Date: Mon, 19 Oct 2026 14:20:00 +0530
+Subject: [PATCH] ipa: rkisp1: Accept ISP8000Pico hardware revision
+
+The Alif Ensemble E8 reports media hw_revision RKISP1_V_PICO (15).
+The 0.4.0 IPA only accepted V10, i.MX8MP, and V12, so camera
+creation failed after the sensor matched.
+
+Treat Pico like V10 for AE cell count (5x5) and the 17-point
+output gamma. Histogram programming is still unused on this IP.
+
+Upstream-Status: Pending
+Signed-off-by: Aravind Krishnan <aravind.krishnan@alifsemi.com>
+---
+ include/linux/rkisp1-config.h |  3 +++
+ src/ipa/rkisp1/rkisp1.cpp     | 11 +++++++++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/include/linux/rkisp1-config.h b/include/linux/rkisp1-config.h
+index edbc6cb65..050c600c5 100644
+--- a/include/linux/rkisp1-config.h
++++ b/include/linux/rkisp1-config.h
+@@ -188,6 +188,8 @@
+  *	histogram as v12.
+  * @RKISP1_V_IMX8MP: Used in at least i.MX8MP. Same number of entries in grids
+  *	and histogram as v10.
++ * @RKISP1_V_PICO: VeriSilicon ISP8000Pico as used on Alif Ensemble E8.
++ *	5x5 AE grid and 17-point gamma; no histogram.
+  */
+ enum rkisp1_cif_isp_version {
+ 	RKISP1_V10 = 10,
+@@ -195,6 +197,7 @@ enum rkisp1_cif_isp_version {
+ 	RKISP1_V12,
+ 	RKISP1_V13,
+ 	RKISP1_V_IMX8MP,
++	RKISP1_V_PICO,
+ };
+ 
+ enum rkisp1_cif_isp_histogram_mode {
+diff --git a/src/ipa/rkisp1/rkisp1.cpp b/src/ipa/rkisp1/rkisp1.cpp
+index 2ffdd99b1..e57cc2f2c 100644
+--- a/src/ipa/rkisp1/rkisp1.cpp
++++ b/src/ipa/rkisp1/rkisp1.cpp
+@@ -113,6 +113,14 @@ const IPAHwSettings ipaHwSettingsV12{
+ 	false,
+ };
+ 
++const IPAHwSettings ipaHwSettingsPico{
++	RKISP1_CIF_ISP_AE_MEAN_MAX_V10,
++	RKISP1_CIF_ISP_HIST_BIN_N_MAX_V10,
++	RKISP1_CIF_ISP_HISTOGRAM_WEIGHT_GRIDS_SIZE_V10,
++	RKISP1_CIF_ISP_GAMMA_OUT_MAX_SAMPLES_V10,
++	false,
++};
++
+ /* List of controls handled by the RkISP1 IPA */
+ const ControlInfoMap::Map rkisp1Controls{
+ 	{ &controls::AwbEnable, ControlInfo(false, true) },
+@@ -150,6 +158,9 @@ int IPARkISP1::init(const IPASettings &settings, unsigned int hwRevision,
+ 	case RKISP1_V12:
+ 		context_.hw = &ipaHwSettingsV12;
+ 		break;
++	case RKISP1_V_PICO:
++		context_.hw = &ipaHwSettingsPico;
++		break;
+ 	default:
+ 		LOG(IPARkISP1, Error)
+ 			<< "Hardware revision " << hwRevision
+-- 
+2.43.0
