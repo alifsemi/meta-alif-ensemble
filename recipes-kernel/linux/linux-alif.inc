@@ -33,6 +33,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-isp", "file://i
 # ensemble-ex.dtsi default isp_buf (0xa1000000) stays inside it. A pool outside
 # RAM has no struct page and breaks dma_direct_get_sgtable()/dma_direct_map_sg().
 SRC_URI:append = " ${@'file://isp-buf-reserve-hexspi0-mirror.patch' if bb.utils.contains("DISTRO_FEATURES", "apss-isp", True, False, d) and d.getVar("HYPRAM_ONLY") == "0" else "" }"
+SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-parallel-camera", "file://parallel_camera.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipidsi", "file://mipidsi.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file://touch.cfg file://goodix_911_cfg.bin", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
@@ -46,7 +47,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cpufreq", "file
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-wifi", "file://wifi.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-d2d", "file://d2d.cfg", "" ,d)}"
 
-PR .= ".23"
+PR .= ".24"
 inherit dct-kernel
 
 KERNEL_CC:append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
