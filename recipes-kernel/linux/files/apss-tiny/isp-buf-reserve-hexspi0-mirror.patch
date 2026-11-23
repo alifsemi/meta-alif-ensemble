@@ -1,0 +1,35 @@
+From: Aravind Krishnan M <aravind.krishnan@alifsemi.com>
+Subject: [PATCH] ARM: dts: alif: ensemble: move isp_buf to the HEXSPI0 mirror
+
+The A32 sees HEXSPI0 at 0xA0000000 and through a mirror at 0x20000000.
+With HYPRAM_ONLY=0, Linux RAM is the mirror. isp_buf at 0xA1000000
+is then the same memory as RAM at 0x21000000, and has no struct page,
+so DMABUF export builds a bogus scatterlist and QBUF oopses in
+dma_direct_map_sg(). Place the pool at the 0x21000000 alias.
+
+Signed-off-by: Aravind Krishnan M <aravind.krishnan@alifsemi.com>
+---
+diff --git a/arch/arm/boot/dts/alif/ensemble/common/ensemble-ex.dtsi b/arch/arm/boot/dts/alif/ensemble/common/ensemble-ex.dtsi
+index bfc84f5c3eea..f9c3d0e44c4e 100644
+--- a/arch/arm/boot/dts/alif/ensemble/common/ensemble-ex.dtsi
++++ b/arch/arm/boot/dts/alif/ensemble/common/ensemble-ex.dtsi
+@@ -154,13 +154,14 @@ cpi_buf: cpi-frame-buffer@2000000 {
+ 			no-map;
+ 		};
+ 
+-		/* ISP MI pool in HEXSPI0 external memory (0xA0000000, 512MB).
+-		 * 16MB at 0xA1000000, beside the Ethos pools at 0xA2000000
+-		 * and 0xA3000000. CPI AXI stays in SRAM0.
++		/* ISP MI pool, 16MB of HyperRAM at offset 16MB. Linux RAM uses
++		 * the HEXSPI0 mirror at 0x20000000, so the pool must use that
++		 * alias too. At 0xA1000000 it would overlap RAM 0x21000000 and
++		 * would have no struct page for DMABUF export.
+ 		 */
+-		isp_buf: isp-frame-buffer@a1000000 {
++		isp_buf: isp-frame-buffer@21000000 {
+ 			compatible = "shared-dma-pool";
+-			reg = <0xa1000000 0x1000000>;
++			reg = <0x21000000 0x1000000>;
+ 			no-map;
+ 		};
+ 

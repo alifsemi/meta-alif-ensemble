@@ -27,6 +27,12 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-pdm", "file://p
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-i2c", "file://i2c.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipicsi", "file://mipicsi.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-isp", "file://isp.cfg", "" ,d)}"
+# isp_buf moves to the HEXSPI0 mirror (0x21000000) only when HYPRAM_ONLY=0,
+# because only then is the mirror part of Linux RAM (memory2@2000000, see
+# dct-kernel.bbclass). With HYPRAM_ONLY=1 Linux RAM is memory@a0000000 and the
+# ensemble-ex.dtsi default isp_buf (0xa1000000) stays inside it. A pool outside
+# RAM has no struct page and breaks dma_direct_get_sgtable()/dma_direct_map_sg().
+SRC_URI:append = " ${@'file://isp-buf-reserve-hexspi0-mirror.patch' if bb.utils.contains("DISTRO_FEATURES", "apss-isp", True, False, d) and d.getVar("HYPRAM_ONLY") == "0" else "" }"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipidsi", "file://mipidsi.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-touch", "file://touch.cfg file://goodix_911_cfg.bin", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-adc12", "file://adc.cfg", "" ,d)}"
