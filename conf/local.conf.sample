@@ -439,3 +439,14 @@ CONF_VERSION = "2"
 # Default value: "0"
 # BASE_IMAGE7 = "1"
 #
+
+# CAMERA_SENSOR - sensor for MIPI CSI and CPI. Selects camera-<name>.cfg
+# and camera/<name>.dtsi from this value alone. mipicsi.cfg only enables
+# the CSI receiver. A new sensor is a new name in CAMERA_SENSORS plus its
+# cfg fragment and camera/<name>.dtsi.
+# Supported values are,
+#  "arx3a0" - ON Semiconductor ARX3A0
+#  "ov5675" - OmniVision OV5675
+# Default value: "arx3a0"
+#CAMERA_SENSOR = "arx3a0"
+#

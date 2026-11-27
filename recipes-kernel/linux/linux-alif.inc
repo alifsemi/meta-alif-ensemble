@@ -26,6 +26,8 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-crc", "file://c
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-pdm", "file://pdm.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-i2c", "file://i2c.cfg", "" ,d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-mipicsi", "file://mipicsi.cfg", "" ,d)}"
+# Sensor driver named by CAMERA_SENSOR. Used for MIPI CSI and CPI.
+SRC_URI:append = " ${@'file://camera-%s.cfg' % (d.getVar('CAMERA_SENSOR') or '').strip().lower() if (d.getVar('CAMERA_SENSOR') or '').strip() else ''}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-isp", "file://isp.cfg", "" ,d)}"
 # isp_buf moves to the HEXSPI0 mirror (0x21000000) only when HYPRAM_ONLY=0,
 # because only then is the mirror part of Linux RAM (memory2@2000000, see
@@ -47,7 +49,7 @@ SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-cpufreq", "file
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-wifi", "file://wifi.cfg", "", d)}"
 SRC_URI:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apss-d2d", "file://d2d.cfg", "" ,d)}"
 
-PR .= ".24"
+PR .= ".25"
 inherit dct-kernel
 
 KERNEL_CC:append = " -DA32_HWSEM_MST_ID=${A32_HWSEM_MST_ID} "
@@ -110,4 +112,10 @@ python __anonymous () {
 
     if machine == 'devkit-e6' and smp == '1':
         bb.fatal("Machine %s does not support SMP. Try building images without SMP (SMP = '0')" %(machine));
+
+    sensor = (d.getVar('CAMERA_SENSOR') or '').strip().lower()
+    if sensor:
+        known = (d.getVar('CAMERA_SENSORS') or '').split()
+        if sensor not in known:
+            bb.fatal("CAMERA_SENSOR must be one of: %s (got '%s'). Set it in local.conf." % (" ".join(known), sensor))
 }
